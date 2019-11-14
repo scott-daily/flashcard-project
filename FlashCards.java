@@ -41,6 +41,7 @@ public class FlashCards {
             }
 
             if (input.equals("ask")) {
+                // Don't allow ask if there are no key:value pairs in CardMap yet <------------****
                 System.out.println("How many times to ask?");
                 int askCount = scanner.nextInt();
                 scanner.nextLine();
@@ -74,18 +75,17 @@ public class FlashCards {
             }
 
             if (input.equals("remove")) {
-                /*
-                > remove
-                The card:
-                > France
-                The card has been removed.
 
-                Input the action (add, remove, import, export, ask, exit):
-                > remove
-                The card:
-                > Wakanda
-                Can't remove "Wakanda": there is no such card.
-                */
+                System.out.println("The card:");
+                String tempKey = scanner.nextLine();
+                
+                if (cardMap.containsKey(tempKey)) {
+                    cardMap.remove(tempKey);
+                    System.out.println("The card has been removed.");
+                }
+                else {
+                    System.out.println("Can't remove " + "\"" + tempKey + "\": there is no such card.");
+                }
             }
         }
     }

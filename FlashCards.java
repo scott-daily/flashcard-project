@@ -1,5 +1,6 @@
 import java.util.*;
-import java.lang.Math; 
+import java.lang.Math;
+import java.io.*;
 
 public class FlashCards {
     public static void main(String[] args) {
@@ -41,35 +42,40 @@ public class FlashCards {
             }
 
             if (input.equals("ask")) {
-                // Don't allow ask if there are no key:value pairs in CardMap yet <------------****
-                System.out.println("How many times to ask?");
-                int askCount = scanner.nextInt();
-                scanner.nextLine();
-                while (askCount > 0) {
-                    boolean correct = false;
-                    List<String> keysArray = new ArrayList<String>(cardMap.keySet());
-                    List<String> valuesArray = new ArrayList<String>(cardMap.values());
 
-                    Random random = new Random();
-                    String randomKey = cardMap.get(keysArray.get(random.nextInt(keysArray.size())));
-                    int indexOfRandomValue = valuesArray.indexOf(randomKey);
+                if (cardMap.isEmpty()) {
+                    System.out.println("Can't use ask, there are no cards yet.");
+                }
+                else {
+                    System.out.println("How many times to ask?");
+                    int askCount = scanner.nextInt();
+                    scanner.nextLine();
+                    while (askCount > 0) {
+                        boolean correct = false;
+                        List<String> keysArray = new ArrayList<String>(cardMap.keySet());
+                        List<String> valuesArray = new ArrayList<String>(cardMap.values());
 
-                    System.out.println("Print the definition of \"" + randomKey + "\":");
-                    String tempAnswer = scanner.nextLine();
+                        Random random = new Random();
+                        String randomKey = cardMap.get(keysArray.get(random.nextInt(keysArray.size())));
+                        int indexOfRandomValue = valuesArray.indexOf(randomKey);
 
-                    if (keysArray.get(indexOfRandomValue).equals(tempAnswer)) {
-                        System.out.println("Correct answer.");
-                        askCount--;
-                        correct = true;
-                    }
-                    else if (cardMap.containsKey(tempAnswer) && !correct) {
-                            System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) +
-                                        "\", you've just written the definition of \"" + cardMap.get(tempAnswer) + "\".");
+                        System.out.println("Print the definition of \"" + randomKey + "\":");
+                        String tempAnswer = scanner.nextLine();
+
+                        if (keysArray.get(indexOfRandomValue).equals(tempAnswer)) {
+                            System.out.println("Correct answer.");
                             askCount--;
-                            }
-                    else  {
-                        System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) + "\"");
-                        askCount--;
+                            correct = true;
+                        }
+                        else if (cardMap.containsKey(tempAnswer) && !correct) {
+                                System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) +
+                                            "\", you've just written the definition of \"" + cardMap.get(tempAnswer) + "\".");
+                                askCount--;
+                                }
+                        else  {
+                            System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) + "\"");
+                            askCount--;
+                        }
                     }
                 }
             }
@@ -78,13 +84,44 @@ public class FlashCards {
 
                 System.out.println("The card:");
                 String tempKey = scanner.nextLine();
-                
+
                 if (cardMap.containsKey(tempKey)) {
                     cardMap.remove(tempKey);
                     System.out.println("The card has been removed.");
                 }
                 else {
                     System.out.println("Can't remove " + "\"" + tempKey + "\": there is no such card.");
+                }
+            }
+
+            if (input.equals("export")) {
+
+                System.out.println("File name:");
+                String fileName = scanner.nextLine();
+                File file = new File(fileName);
+                try (PrintWriter printWriter = new PrintWriter(file)) {
+                    for (Map.Entry<String, String> entry : cardMap.entrySet()) {
+                        printWriter.println(entry.getKey());
+                        printWriter.println(entry.getValue());
+                    }
+                    System.out.println(cardMap.size() + " cards have been saved.");
+                } catch (IOException e) {
+                    System.out.printf("An exception occurs %s", e.getMessage());
+                }
+            }
+
+            if (input.equals("import")) {
+
+                System.out.println("File name:");
+                String fileName = scanner.nextLine();
+                File file = new File(fileName);
+
+                try (Scanner fileScanner = new Scanner(file)) {
+                    while (fileScanner.hasNext()) {
+                        System.out.print(fileScanner.nextLine() + " ");
+                    }
+                } catch (FileNotFoundException e) {
+                    System.out.println("No file found: " + pathToFile);
                 }
             }
         }

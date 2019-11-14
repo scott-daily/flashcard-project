@@ -14,6 +14,12 @@ public class FlashCards {
             System.out.println("Input the action (add, remove, import, export, ask, exit):");
             input = scanner.nextLine();
 
+            if (input.equals("exit")) {
+                exit = true;
+                System.out.println("Bye bye!");
+                break;
+            }
+
             if (input.equals("add")) {
                 System.out.println("The card:");
                 String tempKey = scanner.nextLine();
@@ -32,12 +38,6 @@ public class FlashCards {
                 }
                 cardMap.put(tempKey, tempValue);
                 System.out.println("The pair (" + "\"" + tempKey + "\":" + "\"" + tempValue + "\") has been added.");
-            }
-
-            if (input.equals("exit")) {
-                exit = true;
-                System.out.println("Bye bye!");
-                break;
             }
 
             if (input.equals("ask")) {
@@ -61,12 +61,12 @@ public class FlashCards {
                         askCount--;
                         correct = true;
                     }
-                    if (cardMap.containsKey(tempAnswer) && !correct) {
+                    else if (cardMap.containsKey(tempAnswer) && !correct) {
                             System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) +
                                         "\", you've just written the definition of \"" + cardMap.get(tempAnswer) + "\".");
                             askCount--;
                             }
-                    if (!cardMap.containsKey(tempAnswer) && !correct) {
+                    else  {
                         System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) + "\"");
                         askCount--;
                     }
@@ -74,8 +74,7 @@ public class FlashCards {
             }
 
             if (input.equals("remove")) {
-                /* To Do
-                
+                /*
                 > remove
                 The card:
                 > France

@@ -1,6 +1,7 @@
 import java.util.*;
-import java.lang.Math;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FlashCards {
     public static void main(String[] args) {
@@ -24,21 +25,28 @@ public class FlashCards {
             if (input.equals("add")) {
                 System.out.println("The card:");
                 String tempKey = scanner.nextLine();
+                String tempValue = "";
+                boolean dupeItem = false;
 
                 if (cardMap.containsKey(tempKey)) {
                     System.out.println("The card \"" + tempKey + "\" already exists.");
-                    break;
+                    dupeItem = true;
                 }
 
-                System.out.println("The definition of the card:");
-                String tempValue = scanner.nextLine();
+                if (!dupeItem) {
+                    System.out.println("The definition of the card:");
+                    tempValue = scanner.nextLine();
+                }
 
-                if (cardMap.containsValue(tempValue)) {
+                if (cardMap.containsValue(tempValue) && !dupeItem) {
                     System.out.println("The definition \"" + tempValue + "\" already exists.");
-                    break;
+                    dupeItem = true;
                 }
-                cardMap.put(tempKey, tempValue);
-                System.out.println("The pair (" + "\"" + tempKey + "\":" + "\"" + tempValue + "\") has been added.");
+                
+                if (!dupeItem) {
+                    cardMap.put(tempKey, tempValue);
+                    System.out.println("The pair (" + "\"" + tempKey + "\":" + "\"" + tempValue + "\") has been added.");
+                }
             }
 
             if (input.equals("ask")) {
@@ -116,13 +124,23 @@ public class FlashCards {
                 String fileName = scanner.nextLine();
                 File file = new File(fileName);
 
+                int count = 0;
+                try {
+                    count = (int) Files.lines(Paths.get(fileName)).count();
+                } catch (IOException ioe) {
+                    System.out.println("Error: " + ioe.getMessage());
+                } 
+
+                int loaded = count;
                 try (Scanner fileScanner = new Scanner(file)) {
-                    while (fileScanner.hasNext()) {
-                        System.out.print(fileScanner.nextLine() + " ");
+                    while (count > 0) {
+                        cardMap.put(fileScanner.nextLine(), fileScanner.nextLine());
+                        count -= 2;
                     }
                 } catch (FileNotFoundException e) {
-                    System.out.println("No file found: " + pathToFile);
+                    System.out.println("No file found: " + fileName);
                 }
+                System.out.println(loaded/2 + " cards have been loaded.");
             }
         }
     }

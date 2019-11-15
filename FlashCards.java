@@ -63,25 +63,34 @@ public class FlashCards {
                         List<String> keysArray = new ArrayList<String>(cardMap.keySet());
                         List<String> valuesArray = new ArrayList<String>(cardMap.values());
 
+                        System.out.println(Arrays.asList(keysArray).toString());
+                        System.out.println(Arrays.asList(valuesArray).toString());
+
                         Random random = new Random();
-                        String randomKey = cardMap.get(keysArray.get(random.nextInt(keysArray.size())));
+                        String randomKey = cardMap.get(keysArray.get(random.nextInt(valuesArray.size())));
                         int indexOfRandomValue = valuesArray.indexOf(randomKey);
 
-                        System.out.println("Print the definition of \"" + randomKey + "\":");
+                        System.out.println("Print the definition of \"" + keysArray.get(indexOfRandomValue) + "\":");
                         String tempAnswer = scanner.nextLine();
 
-                        if (keysArray.get(indexOfRandomValue).equals(tempAnswer)) {
+                        if (valuesArray.get(indexOfRandomValue).equals(tempAnswer)) {
                             System.out.println("Correct answer.");
                             askCount--;
                             correct = true;
                         }
-                        else if (cardMap.containsKey(tempAnswer) && !correct) {
-                                System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) +
-                                            "\", you've just written the definition of \"" + cardMap.get(tempAnswer) + "\".");
+                        else if (cardMap.containsValue(tempAnswer) && !correct) {
+                            String defFor = "";
+                            for (Map.Entry<String, String> entry : cardMap.entrySet()) {
+                                if (Objects.equals(tempAnswer, entry.getValue())) {
+                                    defFor = entry.getKey();
+                                }
+                            }
+                                System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) +
+                                            "\", you've just written the definition of \"" + defFor + "\".");
                                 askCount--;
                                 }
                         else  {
-                            System.out.println("Wrong answer. The correct one is \"" + keysArray.get(indexOfRandomValue) + "\"");
+                            System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) + "\"");
                             askCount--;
                         }
                     }

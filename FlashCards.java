@@ -11,7 +11,7 @@ public class FlashCards {
 
         String input = "";
         boolean exit = false;
-       
+
         while (!exit) {
             System.out.println("Input the action (add, remove, import, export, ask, exit):");
             input = scanner.nextLine();
@@ -42,7 +42,7 @@ public class FlashCards {
                     System.out.println("The definition \"" + tempValue + "\" already exists.");
                     dupeItem = true;
                 }
-                
+
                 if (!dupeItem) {
                     cardMap.put(tempKey, tempValue);
                     System.out.println("The pair (" + "\"" + tempKey + "\":" + "\"" + tempValue + "\") has been added.");
@@ -63,9 +63,6 @@ public class FlashCards {
                         List<String> keysArray = new ArrayList<String>(cardMap.keySet());
                         List<String> valuesArray = new ArrayList<String>(cardMap.values());
 
-                        System.out.println(Arrays.asList(keysArray).toString());
-                        System.out.println(Arrays.asList(valuesArray).toString());
-
                         Random random = new Random();
                         String randomKey = cardMap.get(keysArray.get(random.nextInt(valuesArray.size())));
                         int indexOfRandomValue = valuesArray.indexOf(randomKey);
@@ -85,10 +82,10 @@ public class FlashCards {
                                     defFor = entry.getKey();
                                 }
                             }
-                                System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) +
-                                            "\", you've just written the definition of \"" + defFor + "\".");
-                                askCount--;
-                                }
+                            System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) +
+                                    "\", you've just written the definition of \"" + defFor + "\".");
+                            askCount--;
+                        }
                         else  {
                             System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) + "\"");
                             askCount--;
@@ -133,23 +130,27 @@ public class FlashCards {
                 String fileName = scanner.nextLine();
                 File file = new File(fileName);
 
+                boolean notFound = false;
                 int count = 0;
                 try {
                     count = (int) Files.lines(Paths.get(fileName)).count();
                 } catch (IOException ioe) {
-                    System.out.println("Error: " + ioe.getMessage());
-                } 
-
-                int loaded = count;
-                try (Scanner fileScanner = new Scanner(file)) {
-                    while (count > 0) {
-                        cardMap.put(fileScanner.nextLine(), fileScanner.nextLine());
-                        count -= 2;
-                    }
-                } catch (FileNotFoundException e) {
-                    System.out.println("No file found: " + fileName);
+                    System.out.println("File not found.");
+                    notFound = true;
                 }
-                System.out.println(loaded/2 + " cards have been loaded.");
+
+                if (!notFound) {
+                    int loaded = count;
+                    try (Scanner fileScanner = new Scanner(file)) {
+                        while (count > 0) {
+                            cardMap.put(fileScanner.nextLine(), fileScanner.nextLine());
+                            count -= 2;
+                        }
+                    } catch (FileNotFoundException e) {
+                        System.out.println("No file found: " + fileName);
+                    }
+                    System.out.println(loaded / 2 + " cards have been loaded.");
+                }
             }
         }
     }

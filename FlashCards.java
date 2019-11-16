@@ -9,12 +9,13 @@ public class FlashCards {
         Scanner scanner = new Scanner(System.in);
         Map<String, String> cardMap = new HashMap<String, String>();
         List<String> consoleLog = new LinkedList<String>();
+        Map<String, Integer> mistakeMap = new HashMap<String, Integer>();
 
         String input = "";
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("Input the action (add, remove, import, export, ask, exit):");
+            System.out.println("Input the action (add, remove, import, export, ask, exit, hardest card, log, reset stats):");
             consoleLog.add("Input the action (add, remove, import, export, ask, exit):");
             input = scanner.nextLine();
             consoleLog.add(input);
@@ -23,6 +24,11 @@ public class FlashCards {
                 exit = true;
                 System.out.println("Bye bye!");
                 consoleLog.add("Bye bye!");
+
+                mistakeMap.entrySet().forEach(entry->{
+                    System.out.println(entry.getKey() + " " + entry.getValue());  
+                 });
+                
                 break;
             }
 
@@ -94,12 +100,17 @@ public class FlashCards {
                             correct = true;
                         }
                         else if (cardMap.containsValue(tempAnswer) && !correct) {
+
+                            int count = mistakeMap.containsKey(keysArray.get(indexOfRandomValue)) ? mistakeMap.get(keysArray.get(indexOfRandomValue)) : 0;
+                            mistakeMap.put(keysArray.get(indexOfRandomValue), count + 1);
+
                             String defFor = "";
                             for (Map.Entry<String, String> entry : cardMap.entrySet()) {
                                 if (Objects.equals(tempAnswer, entry.getValue())) {
                                     defFor = entry.getKey();
                                 }
                             }
+
                             System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) +
                                     "\", you've just written the definition of \"" + defFor + "\".");
                             consoleLog.add("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) +
@@ -107,6 +118,10 @@ public class FlashCards {
                             askCount--;
                         }
                         else  {
+
+                            int count = mistakeMap.containsKey(keysArray.get(indexOfRandomValue)) ? mistakeMap.get(keysArray.get(indexOfRandomValue)) : 0;
+                            mistakeMap.put(keysArray.get(indexOfRandomValue), count + 1);
+
                             System.out.println("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) + "\"");
                             consoleLog.add("Wrong answer. The correct one is \"" + valuesArray.get(indexOfRandomValue) + "\"");
                             askCount--;
@@ -188,6 +203,7 @@ public class FlashCards {
             }
 
             if (input.equals("log")) {
+
                 System.out.println("File name:");
                 consoleLog.add("File name:");
 
@@ -205,6 +221,15 @@ public class FlashCards {
                     System.out.printf("An exception occurs %s", e.getMessage());
                     consoleLog.add("An exception occurs " + e.getMessage());
                 }
+            }
+
+            if (input.equals("hardest card")) {
+
+                //  To Do:
+                //  prints the term of the card that has the most mistakes in ask mode. You can store the mistake count in a map. 
+                //  If there are no cards with mistakes, you should print There are no cards with errors.. 
+                //  And for multiple hardest cards, you should list them all, like in the example below.
+                
             }
         }
     }

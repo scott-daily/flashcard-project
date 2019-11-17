@@ -24,11 +24,6 @@ public class FlashCards {
                 exit = true;
                 System.out.println("Bye bye!");
                 consoleLog.add("Bye bye!");
-
-                mistakeMap.entrySet().forEach(entry->{
-                    System.out.println(entry.getKey() + " " + entry.getValue());  
-                 });
-                
                 break;
             }
 
@@ -118,7 +113,7 @@ public class FlashCards {
                             askCount--;
                         }
                         else  {
-
+                            
                             int count = mistakeMap.containsKey(keysArray.get(indexOfRandomValue)) ? mistakeMap.get(keysArray.get(indexOfRandomValue)) : 0;
                             mistakeMap.put(keysArray.get(indexOfRandomValue), count + 1);
 
@@ -225,11 +220,34 @@ public class FlashCards {
 
             if (input.equals("hardest card")) {
 
-                //  To Do:
-                //  prints the term of the card that has the most mistakes in ask mode. You can store the mistake count in a map. 
-                //  If there are no cards with mistakes, you should print There are no cards with errors.. 
-                //  And for multiple hardest cards, you should list them all, like in the example below.
-                
+                List<String> mistakeCardList = new LinkedList<String>();
+                int mostMistakes = 0;
+                if (mistakeMap.size() >= 1) {
+                    mostMistakes = Collections.max(mistakeMap.values());
+                    for (Map.Entry<String, Integer> entry : mistakeMap.entrySet()) {
+                        if (entry.getValue()== mostMistakes) {
+                            mistakeCardList.add(entry.getKey());
+                        }
+                    }
+                }
+
+                if (mistakeCardList.size() < 1) {
+                    System.out.println("There are no cards with errors.");
+                }
+                else if (mistakeCardList.size() == 1) {
+                    System.out.println("The hardest card is \"" + mistakeCardList.get(0) + "\". You have " + mostMistakes + " errors answering it.");
+                }
+                else if (mistakeCardList.size() > 1) {
+
+                    String output = "";
+                    for (int i = 0; i < mistakeCardList.size(); i++) {
+                        output += "\"" + mistakeCardList.get(i) + "\"";
+                        if (i != mistakeCardList.size() - 1) {
+                            output += ", ";
+                        }
+                    }
+                    System.out.println("The hardest cards are " + output + ". You have " + mostMistakes * mistakeCardList.size() + " errors answering them.");
+                }
             }
         }
     }

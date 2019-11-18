@@ -56,6 +56,7 @@ public class FlashCards {
 
                 if (!dupeItem) {
                     cardMap.put(tempKey, tempValue);
+                    mistakeMap.put(tempKey, 0);
                     System.out.println("The pair (" + "\"" + tempKey + "\":" + "\"" + tempValue + "\") has been added.");
                     consoleLog.add("The pair (" + "\"" + tempKey + "\":" + "\"" + tempValue + "\") has been added.");
                 }
@@ -113,7 +114,7 @@ public class FlashCards {
                             askCount--;
                         }
                         else  {
-                            
+
                             int count = mistakeMap.containsKey(keysArray.get(indexOfRandomValue)) ? mistakeMap.get(keysArray.get(indexOfRandomValue)) : 0;
                             mistakeMap.put(keysArray.get(indexOfRandomValue), count + 1);
 
@@ -133,6 +134,7 @@ public class FlashCards {
                 consoleLog.add(tempKey);
 
                 if (cardMap.containsKey(tempKey)) {
+                    mistakeMap.remove(tempKey);
                     cardMap.remove(tempKey);
                     System.out.println("The card has been removed.");
                     consoleLog.add("The card has been removed.");
@@ -154,6 +156,12 @@ public class FlashCards {
                     for (Map.Entry<String, String> entry : cardMap.entrySet()) {
                         printWriter.println(entry.getKey());
                         printWriter.println(entry.getValue());
+                        if (mistakeMap.size() > 0 && mistakeMap.get(entry.getKey()) >= 0 ) {
+                            printWriter.println(mistakeMap.get(entry.getKey()));
+                        }
+                        else {
+                            printWriter.println(0);
+                        }
                     }
                     System.out.println(cardMap.size() + " cards have been saved.");
                     consoleLog.add(cardMap.size() + " cards have been saved.");
@@ -185,15 +193,19 @@ public class FlashCards {
                     int loaded = count;
                     try (Scanner fileScanner = new Scanner(file)) {
                         while (count > 0) {
-                            cardMap.put(fileScanner.nextLine(), fileScanner.nextLine());
-                            count -= 2;
+                            String tempCard = fileScanner.nextLine();
+                            String tempDef = fileScanner.nextLine();
+                            int tempMistake = Integer.parseInt(fileScanner.nextLine());
+                            cardMap.put(tempCard, tempDef);
+                            mistakeMap.put(tempCard, tempMistake);
+                            count -= 3;
                         }
                     } catch (FileNotFoundException e) {
                         System.out.println("No file found: " + fileName);
                         consoleLog.add("No file found: " + fileName);
                     }
-                    System.out.println(loaded / 2 + " cards have been loaded.");
-                    consoleLog.add(loaded / 2 + " cards have been loaded.");
+                    System.out.println(loaded / 3 + " cards have been loaded.");
+                    consoleLog.add(loaded / 3 + " cards have been loaded.");
                 }
             }
 
@@ -231,11 +243,13 @@ public class FlashCards {
                     }
                 }
 
-                if (mistakeCardList.size() < 1) {
+                if (mostMistakes == 0 || mistakeCardList.size() < 1) {
                     System.out.println("There are no cards with errors.");
+                    consoleLog.add("There are no cards with errors.");
                 }
                 else if (mistakeCardList.size() == 1) {
                     System.out.println("The hardest card is \"" + mistakeCardList.get(0) + "\". You have " + mostMistakes + " errors answering it.");
+                    consoleLog.add("The hardest card is \"" + mistakeCardList.get(0) + "\". You have " + mostMistakes + " errors answering it.");
                 }
                 else if (mistakeCardList.size() > 1) {
 
@@ -246,8 +260,20 @@ public class FlashCards {
                             output += ", ";
                         }
                     }
-                    System.out.println("The hardest cards are " + output + ". You have " + mostMistakes * mistakeCardList.size() + " errors answering them.");
+                    System.out.println("The hardest cards are " + output + ". You have " + mostMistakes /** mistakeCardList.size()*/ + " errors answering them.");
+                    consoleLog.add("The hardest cards are " + output + ". You have " + mostMistakes /** mistakeCardList.size()*/ + " errors answering them.");
                 }
+            }
+
+            if (input.equals("reset stats")) {
+
+                if (mistakeMap.size() > 0) { 
+                    for (Map.Entry<String, Integer> entry : mistakeMap.entrySet()) {
+                        mistakeMap.put(entry.getKey(), 0);
+                    }
+                }
+                System.out.println("Card statistics has been reset.");
+                consoleLog.add("Card statistics has been reset.");
             }
         }
     }

@@ -13,21 +13,93 @@ public class FlashCards {
 
         String input = "";
         boolean exit = false;
+        boolean exportFlag = false;
+
+        if (args.length > 0) {
+            if (Arrays.asList(args).contains("-import")) {
+                int importIndex = Arrays.asList(args).indexOf("-import");
+                int fileToImport = importIndex + 1;
+
+                String fileName = args[fileToImport];
+                File file = new File(fileName);
+
+                boolean notFound = false;
+                int count = 0;
+                try {
+                    count = (int) Files.lines(Paths.get(fileName)).count();
+                } catch (IOException ioe) {
+                    System.out.println("File not found.");
+                    consoleLog.add("File not found.");
+                    notFound = true;
+                }
+
+                if (!notFound) {
+                    int loaded = count;
+                    try (Scanner fileScanner = new Scanner(file)) {
+                        while (count > 0) {
+                            String tempCard = fileScanner.nextLine();
+                            String tempDef = fileScanner.nextLine();
+                            int tempMistake = Integer.parseInt(fileScanner.nextLine());
+                            cardMap.put(tempCard, tempDef);
+                            mistakeMap.put(tempCard, tempMistake);
+                            count -= 3;
+                        }
+                    } catch (FileNotFoundException e) {
+                        System.out.println("No file found: " + fileName);
+                        consoleLog.add("No file found: " + fileName);
+                    }
+                    System.out.println(loaded / 3 + " cards have been loaded.");
+                    consoleLog.add(loaded / 3 + " cards have been loaded.");
+
+                }
+            }
+            if (Arrays.asList(args).contains("-export")) {
+                exportFlag = true;
+            }
+        }
 
         while (!exit) {
+
             System.out.println("Input the action (add, remove, import, export, ask, exit, hardest card, log, reset stats):");
             consoleLog.add("Input the action (add, remove, import, export, ask, exit):");
             input = scanner.nextLine();
             consoleLog.add(input);
 
             if (input.equals("exit")) {
+
                 exit = true;
                 System.out.println("Bye bye!");
                 consoleLog.add("Bye bye!");
+
+                if (exportFlag == true) {
+
+                    int importIndex = Arrays.asList(args).indexOf("-export");
+                    int fileToImport = importIndex + 1;
+                    String fileName = args[fileToImport];
+                    File file = new File(fileName);
+                    try (PrintWriter printWriter = new PrintWriter(file)) {
+                        for (Map.Entry<String, String> entry : cardMap.entrySet()) {
+                            printWriter.println(entry.getKey());
+                            printWriter.println(entry.getValue());
+                            if (mistakeMap.size() > 0 && mistakeMap.get(entry.getKey()) >= 0 ) {
+                                printWriter.println(mistakeMap.get(entry.getKey()));
+                            }
+                            else {
+                                printWriter.println(0);
+                            }
+                        }
+                    System.out.println(cardMap.size() + " cards have been saved.");
+                    consoleLog.add(cardMap.size() + " cards have been saved.");
+                    } catch (IOException e) {
+                        System.out.printf("An exception occurs %s", e.getMessage());
+                        consoleLog.add("An exception occurs " + e.getMessage());
+                    }
+                }
                 break;
             }
 
             if (input.equals("add")) {
+
                 System.out.println("The card:");
                 consoleLog.add("The card:");
                 String tempKey = scanner.nextLine();
@@ -65,10 +137,12 @@ public class FlashCards {
             if (input.equals("ask")) {
 
                 if (cardMap.isEmpty()) {
+
                     System.out.println("Can't use ask, there are no cards yet.");
                     consoleLog.add("Can't use ask, there are no cards yet.");
                 }
                 else {
+
                     System.out.println("How many times to ask?");
                     consoleLog.add("How many times to ask?");
                     int askCount = scanner.nextInt();
@@ -76,6 +150,7 @@ public class FlashCards {
                     scanner.nextLine();
 
                     while (askCount > 0) {
+
                         boolean correct = false;
                         List<String> keysArray = new ArrayList<String>(cardMap.keySet());
                         List<String> valuesArray = new ArrayList<String>(cardMap.values());
@@ -90,6 +165,7 @@ public class FlashCards {
                         consoleLog.add(tempAnswer);
 
                         if (valuesArray.get(indexOfRandomValue).equals(tempAnswer)) {
+
                             System.out.println("Correct answer.");
                             consoleLog.add("Correct answer.");
                             askCount--;
